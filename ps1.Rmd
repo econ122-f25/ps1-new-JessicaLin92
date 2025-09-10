@@ -40,7 +40,7 @@ This section will test your understanding of basic R syntax, data types, and vec
 
 ```{r}
 course_name <- "Introduction to Data Science"
-num_students <- 45 
+num_students <- 45L 
 class(course_name)
 class(num_students)
 
