@@ -139,11 +139,19 @@ Using the `mtcars_processed` dataset:
 3.  Arrange the final result first by `cyl` (ascending) and then by `average_mpg` (descending).
 
 ```{r}
-# Your code here
+mtcars_processed %>%
+  group_by(cyl, am) %>%
+  summarize(
+    average_mpg = mean(mpg, na.rm = TRUE),
+    median_hp   = median(hp, na.rm = TRUE),
+    n_cars      = n()) %>%
+  arrange(cyl, desc(average_mpg))
 ```
 
 ### Short Answer
 Based on your grouped summary, what general trends do you observe regarding average `mpg` and median `hp` across different combinations of `cylinders` and `transmission` types? How do these summaries help differentiate car characteristics?
+
+Based on the summary, cars with fewer cylinders, especially four-cylinder ones, have higher miles per gallon but lower horsepower, while cars with more cylinders, especially eight-cylinder ones, trade fuel efficiency for greater power.
 
 ---
 
@@ -195,22 +203,35 @@ This task demonstrates how creating new variables that depend on previous time p
     * `Growth_2022`: `(Year_2022 - Year_2021) / Year_2021 * 100`
 
 ```{r}
-# Your code here
+product_sales_wide %>%
+  mutate(
+    Growth_2021 = (Year_2021 - Year_2020) / Year_2020 * 100,
+    Growth_2022 = (Year_2022 - Year_2021) / Year_2021 * 100)
 ```
 
 2.  **Reshape to Long Format:** Reshape `product_sales_wide` into a long format called `product_sales_long`. Pivot the year columns (`Year_2020`, `Year_2021`, `Year_2022`) into two new columns: `Year` and `Sales`. Make sure `Year` is numeric.
 
 ```{r}
-# Your code here
+product_sales_long <- product_sales_wide %>%
+  pivot_longer(cols = starts_with("Year_"),
+               names_to = "Year",
+               names_prefix = "Year_",
+               values_to = "Sales")
 ```
 3.  **Analysis in Long Format:** Using the `product_sales_long` dataset, calculate a single `Growth_Rate` column that represents the year-over-year growth for each product. You should use `group_by()` and `lag()`. The formula for growth rate is `(current_year_sales - previous_year_sales) / previous_year_sales * 100`.
 
 ```{r}
-# Your code here
+product_sales_long %>%
+  group_by(product) %>% 
+  arrange(Year, .by_group = TRUE) %>% 
+  mutate(Growth_Rate = (Sales - lag(Sales)) / lag(Sales) * 100
+  ) 
 ```
 
 ### Short Answer
 Compare the code required to calculate the year-over-year growth rate in the wide format versus the long format. Which approach is more concise and scalable if you had many more years of data? Why is the long format generally preferred for this type of time-series calculation?
+
+I would say the long format is generally preferred is because it has more of a clear overview. Wide format dataframe is still fine for small, simple comparisons, but long format is the standard for time-series work because it’s scalable, flexible, and tidy.
 
 ---
 
@@ -223,15 +244,32 @@ This task explores combining student demographic information with their academic
 3.  **Advanced Mutate (after Left Join):** After performing the left join, calculate the **average `grade_score` for each student**. This will require grouping by `student_id` and `student_name`.
 
 ```{r}
-# Your code for inner_join and its explanation
+students1 <- students_demographics%>% 
+  inner_join(student_grades,by = "student_id")
+
+print(students1)
+
 ```{r}
-# Your code for left_join and its explanation
+
+students2 <- students_demographics %>%
+  left_join(student_grades, by = "student_id")
+
+print(students2)
+
+
 ```{r}
-# Your code for advanced mutate after left join
+students_avg <- students2 %>%
+  group_by(student_id, student_name) %>%
+  mutate(avg_score = mean(grade_score, na.rm = TRUE))
+
+print(students_avg)
 ```
 
 ### Short Answer
 Compare the number of rows and the content of the `inner_join()` and `left_join()` results. Specifically, identify which student(s) are present in one join but not the other, and explain why. What does the average grade calculation reveal about students with multiple grades or no grades?
+
+The inner join (students1) has fewer rows because it only keeps students with both demographics and grades, and will drop any row that is missing any of that; The left join (students2) has all 7 rows present because it didn't drop any row, but this means the data will display some NA. This concludes students with no grades appear only in the left join, not in the inner join. For the average grade shows one value per student, therefore it summarizes multiple grades into a mean, and students with no grades have NA as their average.
+
 
 ---
 
@@ -244,15 +282,26 @@ This task focuses on using filtering joins to identify different categories of s
 3.  **Grades Without Students:** Use an `anti_join()` to identify any grade records in `student_grades` that do *not* correspond to an existing student in `students_demographics` (e.g., a data entry error or a record for a past student no longer in the demographic system). This should return only columns from `student_grades`.
 
 ```{r}
-# Your code for question 1 (semi_join)
+enrolled_students <- students_demographics %>%
+  semi_join(student_grades, by = "student_id")
+
+print(enrolled_students)
+
 ```{r}
-# Your code for question 2 (anti_join on students_demographics)
+students_without_grades <- students_demographics %>%
+  anti_join(student_grades, by = "student_id")
+
+print(students_without_grades)
+
 ```{r}
-# Your code for question 3 (anti_join on student_grades)
+grades_without_students <- student_grades %>%
+  anti_join(students_demographics, by = "student_id")
+
+print(grades_without_students)
 ```
 
 ### Short Answer
 Describe the distinct insights gained from each of the three filtering joins in this task. How do these joins help in data validation and understanding the completeness of your student records?
 
-
+For Semi join (enrolled_students), the data shows which students in demographics actually have grade records. Anti join (students_without_grades) identifies students who exist in demographics but have no grades, while the anti join of grades (grades_without_students) finds grade records that don’t match any student in demographics. These joins can help in data validation as they ensure that records match across systems by highlighting any missing, mismatched, or extra records. 
 
