@@ -1,7 +1,7 @@
 ---
 title: "Problem Set 1"
 author: "Jessica"
-date: "`r Sys.Date()`"
+date: " sep 9th"
 output: github_document
 ---
 
@@ -127,6 +127,7 @@ mtcars_processed %>%
 
 ### Short Answer
 Why might creating `hp_per_wt` and `qsec_category` be useful metrics when analyzing car performance, beyond just raw horsepower and weight?
+
 Because it is important to consider all aspects of the car when analyzing car performance, such as speed groups, weights in relations to horsepower and speef to obtain a better clear and fair comparision. 
 ---
 
@@ -231,7 +232,7 @@ product_sales_long %>%
 ### Short Answer
 Compare the code required to calculate the year-over-year growth rate in the wide format versus the long format. Which approach is more concise and scalable if you had many more years of data? Why is the long format generally preferred for this type of time-series calculation?
 
-I would say the long format is generally preferred is because it has more of a clear overview. Wide format dataframe is still fine for small, simple comparisons, but long format is the standard for time-series work because it’s scalable, flexible, and tidy.
+The long format is generally preferred is because it has more of a clear overview. Wide format data frame is still fine for small, simple comparisons, but long format is the standard for time-series work because it’s more tidy.
 
 ---
 
