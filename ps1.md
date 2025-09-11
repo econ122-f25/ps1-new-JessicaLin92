@@ -227,7 +227,7 @@ mtcars_processed %>%
 Why might creating `hp_per_wt` and `qsec_category` be useful metrics
 when analyzing car performance, beyond just raw horsepower and weight?
 
-## Because it is important to consider all aspects of the car when analyzing car performance, such as speed groups, weights in relations to horsepower and speef to obtain a better clear and fair comparision.
+Because it is important to consider all aspects of the car when analyzing car performance, such as speed groups, weights in relations to horsepower and speef to obtain a better clear and fair comparision.
 
 ### Task 1.3: Grouped Summaries
 
